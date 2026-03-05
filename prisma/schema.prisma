@@ -1,0 +1,534 @@
+// Prisma schema for Swapcard Clone - Vitalist Bay Event Platform
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================================
+// AUTHENTICATION & USER MANAGEMENT
+// ============================================================================
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  passwordHash String?
+  name         String?
+  avatar       String?
+  bio          String? @db.Text
+  company      String?
+  jobTitle     String?
+  phone        String?
+  linkedin     String?
+  twitter      String?
+  website      String?
+
+  // Auth
+  emailVerified DateTime?
+
+  // System
+  role      UserRole @default(ATTENDEE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  accounts Account[]
+  sessions Session[]
+
+  // Event relations
+  registrations     Registration[]
+  speakerProfiles   Speaker[]
+  exhibitorContacts ExhibitorContact[]
+
+  // Networking
+  meetingsRequested Meeting[] @relation("MeetingRequester")
+  meetingsReceived  Meeting[] @relation("MeetingRequestee")
+  messagesSent      Message[] @relation("MessageSender")
+  messagesReceived  Message[] @relation("MessageReceiver")
+
+  @@index([email])
+  @@index([createdAt])
+}
+
+enum UserRole {
+  ADMIN
+  ORGANIZER
+  SPEAKER
+  EXHIBITOR
+  ATTENDEE
+}
+
+// NextAuth.js required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============================================================================
+// EVENT MANAGEMENT
+// ============================================================================
+
+model Event {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  description String? @db.Text
+
+  // Dates & Time
+  startDate DateTime
+  endDate   DateTime
+  timezone  String   @default("America/Los_Angeles")
+
+  // Format & Location
+  format     EventFormat @default(IN_PERSON)
+  venue      String?
+  address    String?
+  city       String?
+  country    String?
+  virtualUrl String?
+
+  // Branding
+  logo         String?
+  banner       String?
+  primaryColor String? @default("#6366f1")
+
+  // Settings
+  isPublished           Boolean @default(false)
+  registrationOpen      Boolean @default(true)
+  networkingEnabled     Boolean @default(true)
+  messagingEnabled      Boolean @default(true)
+  meetingRequestEnabled Boolean @default(true)
+
+  // System
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  registrations Registration[]
+  eventSessions EventSession[]
+  tracks        Track[]
+  rooms         Room[]
+  speakers      Speaker[]
+  exhibitors    Exhibitor[]
+  meetings      Meeting[]
+  messages      Message[]
+  ticketTypes   TicketType[]
+
+  @@index([slug])
+  @@index([startDate])
+  @@index([isPublished])
+}
+
+enum EventFormat {
+  IN_PERSON
+  VIRTUAL
+  HYBRID
+}
+
+// ============================================================================
+// TICKETS & REGISTRATION
+// ============================================================================
+
+model TicketType {
+  id          String  @id @default(cuid())
+  eventId     String
+  name        String
+  description String? @db.Text
+  price       Decimal @db.Decimal(10, 2)
+  currency    String  @default("USD")
+  quantity    Int? // null = unlimited
+  soldCount   Int     @default(0)
+
+  // Access levels
+  allowNetworking    Boolean @default(true)
+  allowMeetings      Boolean @default(true)
+  allowExhibitorChat Boolean @default(true)
+
+  // Availability
+  saleStart DateTime?
+  saleEnd   DateTime?
+  isActive  Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event         Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registrations Registration[]
+
+  @@index([eventId])
+}
+
+model Registration {
+  id           String  @id @default(cuid())
+  eventId      String
+  userId       String
+  ticketTypeId String?
+
+  // Status
+  status RegistrationStatus @default(PENDING)
+
+  // Check-in
+  qrCode      String    @unique @default(cuid())
+  checkedIn   Boolean   @default(false)
+  checkedInAt DateTime?
+
+  // Custom fields (stored as JSON)
+  customFields Json?
+
+  // Payment
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentId     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event      Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticketType TicketType? @relation(fields: [ticketTypeId], references: [id])
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@index([qrCode])
+  @@index([status])
+}
+
+// Personal Agenda - User's saved sessions
+model PersonalAgendaItem {
+  id        String @id @default(cuid())
+  userId    String
+  sessionId String
+  eventId   String
+
+  addedAt DateTime @default(now())
+
+  session EventSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sessionId])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([eventId])
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  WAITLISTED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  FREE
+}
+
+// ============================================================================
+// AGENDA / SESSIONS
+// ============================================================================
+
+model Track {
+  id        String @id @default(cuid())
+  eventId   String
+  name      String
+  color     String @default("#6366f1")
+  sortOrder Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event    Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  sessions EventSession[]
+
+  @@unique([eventId, name])
+  @@index([eventId])
+}
+
+model Room {
+  id        String  @id @default(cuid())
+  eventId   String
+  name      String
+  capacity  Int?
+  floor     String?
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event    Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  sessions EventSession[]
+  meetings Meeting[]
+
+  @@unique([eventId, name])
+  @@index([eventId])
+}
+
+model EventSession {
+  id      String  @id @default(cuid())
+  eventId String
+  trackId String?
+  roomId  String?
+
+  title       String
+  description String? @db.Text
+
+  // Timing
+  startTime DateTime
+  endTime   DateTime
+
+  // Type
+  type SessionType @default(TALK)
+
+  // Livestream / Recording
+  streamUrl    String?
+  recordingUrl String?
+
+  // Capacity
+  capacity Int?
+
+  isPublished Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event    Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  track    Track?           @relation(fields: [trackId], references: [id])
+  room     Room?            @relation(fields: [roomId], references: [id])
+  speakers SessionSpeaker[]
+  personalAgendaItems PersonalAgendaItem[]
+
+  @@index([eventId])
+  @@index([startTime])
+  @@index([trackId])
+}
+
+enum SessionType {
+  TALK
+  PANEL
+  WORKSHOP
+  KEYNOTE
+  NETWORKING
+  BREAK
+  OTHER
+}
+
+// ============================================================================
+// SPEAKERS
+// ============================================================================
+
+model Speaker {
+  id      String  @id @default(cuid())
+  eventId String
+  userId  String? // Link to user account if they have one
+
+  // Profile (can override user data for this event)
+  name     String
+  email    String?
+  avatar   String?
+  bio      String? @db.Text
+  company  String?
+  jobTitle String?
+
+  // Social
+  linkedin String?
+  twitter  String?
+  website  String?
+
+  // Display
+  featured  Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event    Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user     User?            @relation(fields: [userId], references: [id])
+  sessions SessionSpeaker[]
+
+  @@unique([eventId, email])
+  @@index([eventId])
+  @@index([userId])
+}
+
+model SessionSpeaker {
+  id        String @id @default(cuid())
+  sessionId String
+  speakerId String
+  role      String @default("Speaker") // "Speaker", "Moderator", "Panelist"
+  sortOrder Int    @default(0)
+
+  createdAt DateTime @default(now())
+
+  session EventSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  speaker Speaker      @relation(fields: [speakerId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, speakerId])
+  @@index([sessionId])
+  @@index([speakerId])
+}
+
+// ============================================================================
+// EXHIBITORS
+// ============================================================================
+
+model Exhibitor {
+  id      String @id @default(cuid())
+  eventId String
+
+  // Company info
+  companyName String
+  description String? @db.Text
+  logo        String?
+  website     String?
+
+  // Booth
+  boothNumber String?
+  boothSize   String? // "Standard", "Premium", "Sponsor"
+
+  // Categories/Tags
+  categories String[] @default([])
+
+  // Display
+  featured  Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event    Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  contacts ExhibitorContact[]
+
+  @@index([eventId])
+}
+
+model ExhibitorContact {
+  id          String @id @default(cuid())
+  exhibitorId String
+  userId      String
+  role        String @default("Representative") // "Primary", "Representative"
+
+  createdAt DateTime @default(now())
+
+  exhibitor Exhibitor @relation(fields: [exhibitorId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([exhibitorId, userId])
+  @@index([exhibitorId])
+  @@index([userId])
+}
+
+// ============================================================================
+// NETWORKING - MEETINGS
+// ============================================================================
+
+model Meeting {
+  id          String @id @default(cuid())
+  eventId     String
+  requesterId String
+  requesteeId String
+
+  // Scheduling
+  proposedTime DateTime?
+  duration     Int       @default(15) // minutes
+  roomId       String?
+  location     String? // Free text alternative
+  virtualUrl   String?
+
+  // Status
+  status MeetingStatus @default(PENDING)
+
+  // Messages
+  requestMessage  String? @db.Text
+  responseMessage String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event     Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  requester User  @relation("MeetingRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  requestee User  @relation("MeetingRequestee", fields: [requesteeId], references: [id], onDelete: Cascade)
+  room      Room? @relation(fields: [roomId], references: [id])
+
+  @@index([eventId])
+  @@index([requesterId])
+  @@index([requesteeId])
+  @@index([status])
+  @@index([proposedTime])
+}
+
+enum MeetingStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+  COMPLETED
+}
+
+// ============================================================================
+// NETWORKING - MESSAGING
+// ============================================================================
+
+model Message {
+  id         String @id @default(cuid())
+  eventId    String
+  senderId   String
+  receiverId String
+
+  content String @db.Text
+
+  // Status
+  read   Boolean   @default(false)
+  readAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  event    Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  sender   User  @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User  @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([createdAt])
+  @@index([senderId, receiverId])
+}
