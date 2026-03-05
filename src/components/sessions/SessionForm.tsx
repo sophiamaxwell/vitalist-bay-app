@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { SessionFormData, SessionType, SESSION_TYPES, Track, Room, Speaker } from '@/types'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -20,7 +20,6 @@ interface SessionFormProps {
 
 export function SessionForm({
   initialData,
-  eventId,
   tracks,
   rooms,
   speakers,

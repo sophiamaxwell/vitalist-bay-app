@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
-import { Plus, Calendar, Users, MapPin, Globe, Settings } from "lucide-react";
+import { Plus, Calendar, Users, MapPin, Globe } from "lucide-react";
 
 export const metadata = {
   title: "Events | Vitalist Bay Studio",

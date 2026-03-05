@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+// Ensure this is treated as a dynamic API route
+export const dynamic = 'force-dynamic'
+
 // GET - Get check-in statistics for an event
 export async function GET(
   request: NextRequest,
@@ -8,6 +11,14 @@ export async function GET(
 ) {
   try {
     const { eventId } = params
+
+    // Guard against build-time execution
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 500 }
+      )
+    }
 
     // Get total registrations and checked-in count
     const [totalRegistrations, checkedInCount, recentCheckIns] = await Promise.all([
@@ -76,6 +87,15 @@ export async function POST(
 ) {
   try {
     const { eventId } = params
+
+    // Guard against build-time execution
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 500 }
+      )
+    }
+
     const body = await request.json()
     const { qrCode } = body
 

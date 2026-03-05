@@ -108,10 +108,9 @@ export default function AttendeesPage({ params }: AttendeesPageProps) {
     }
   }
 
-  const stats = {
-    total: pagination.total,
-    checkedIn: attendees.filter(a => a.checkedIn).length,
-  }
+  // Stats calculated for potential future use
+  void pagination.total
+  void attendees.filter(a => a.checkedIn).length
 
   return (
     <div className="max-w-6xl">

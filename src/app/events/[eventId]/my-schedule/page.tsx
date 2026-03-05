@@ -19,7 +19,7 @@ const MOCK_USER_ID = 'user-demo-123'
 export default function MySchedulePage({ params }: MySchedulePageProps) {
   const { eventId } = params
 
-  const [agendaItems, setAgendaItems] = useState<any[]>([])
+  const [agendaItems, setAgendaItems] = useState<{ sessionId: string; session: SessionWithRelations }[]>([])
   const [tracks, setTracks] = useState<Track[]>([])
   const [isLoading, setIsLoading] = useState(true)
 

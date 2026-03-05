@@ -74,7 +74,7 @@ export function RegisterForm() {
         // Success - redirect to onboarding or dashboard
         router.push('/onboarding')
       }
-    } catch (error) {
+    } catch {
       setError('Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)

@@ -43,7 +43,7 @@ export function TicketQRCode({
         if ('wakeLock' in navigator) {
           wakeLock = await navigator.wakeLock.request('screen')
         }
-      } catch (err) {
+      } catch {
         console.log('Wake lock not supported')
       }
     }

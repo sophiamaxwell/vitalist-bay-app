@@ -129,17 +129,17 @@ class MetricsCollector {
 
   // Get all metrics for export
   getAllMetrics() {
-    const metrics: Record<string, any> = {
+    const metrics: Record<string, unknown> = {
       histograms: {},
       counters: {},
       gauges: {},
       timestamp: new Date().toISOString(),
     }
 
-    for (const [key, histogram] of this.histograms.entries()) {
+    for (const [key] of this.histograms.entries()) {
       const stats = this.getHistogramStats(key)
       if (stats) {
-        metrics.histograms[key] = stats
+        (metrics.histograms as Record<string, unknown>)[key] = stats
       }
     }
 

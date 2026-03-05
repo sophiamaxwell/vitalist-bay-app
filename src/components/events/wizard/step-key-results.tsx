@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Input, Checkbox } from "@/components/ui";
+import { Button, Input } from "@/components/ui";
 import { useEventWizard } from "@/lib/stores/event-wizard-store";
 import {
   keyResultsSchema,
@@ -17,7 +17,7 @@ interface StepKeyResultsProps {
 }
 
 export function StepKeyResults({ onSubmit }: StepKeyResultsProps) {
-  const { state, updateData, prevStep, setSubmitting, isLastStep } =
+  const { state, updateData, prevStep, setSubmitting } =
     useEventWizard();
 
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>(

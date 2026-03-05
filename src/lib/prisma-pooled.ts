@@ -62,7 +62,7 @@ function createPrismaClient(): PrismaClient {
       : ['error'],
     
     // Enable metrics in production for monitoring
-    // @ts-ignore - Prisma preview feature
+    // @ts-expect-error - Prisma preview feature
     // metrics: process.env.NODE_ENV === 'production',
   })
 
@@ -109,12 +109,13 @@ export async function withRetry<T>(
   for (let attempt = 0; attempt < RETRY_CONFIG.maxRetries; attempt++) {
     try {
       return await operation()
-    } catch (error: any) {
-      lastError = error
+    } catch (error: unknown) {
+      lastError = error as Error
       
       // Check if error is retryable
+      const err = error as { code?: string; message?: string }
       const isRetryable = RETRY_CONFIG.retryableErrors.some(code => 
-        error.code === code || error.message?.includes(code)
+        err.code === code || err.message?.includes(code)
       )
       
       if (!isRetryable || attempt === RETRY_CONFIG.maxRetries - 1) {
@@ -184,7 +185,7 @@ export async function checkDatabaseHealth(prisma: PrismaClient): Promise<{
       latencyMs,
       // Pool stats would come from PgBouncer or Prisma Data Proxy
     }
-  } catch (error) {
+  } catch {
     return {
       healthy: false,
       latencyMs: Date.now() - startTime,

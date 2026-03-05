@@ -18,11 +18,11 @@ export default function InstallPrompt() {
   useEffect(() => {
     // Check if already installed (standalone mode)
     const isInStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone === true;
+      (window.navigator as unknown as { standalone?: boolean }).standalone === true;
     setIsStandalone(isInStandalone);
 
     // Check if iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as { MSStream?: unknown }).MSStream;
     setIsIOS(isIOSDevice);
 
     // Check if previously dismissed (with expiry)

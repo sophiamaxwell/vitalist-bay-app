@@ -100,7 +100,7 @@ export default function CheckInScannerPage({ params }: ScannerPageProps) {
         fetchStats()
         setManualCode('')
       }
-    } catch (error) {
+    } catch {
       setLastResult({ error: 'Network error. Please try again.' })
     } finally {
       setIsProcessing(false)
@@ -124,7 +124,7 @@ export default function CheckInScannerPage({ params }: ScannerPageProps) {
         videoRef.current.srcObject = stream
         videoRef.current.play()
       }
-    } catch (error) {
+    } catch {
       setCameraError('Could not access camera. Please use manual entry.')
       setScanMode('manual')
     }

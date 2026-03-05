@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import type { RegistrationWithDetails } from '@/types/registration'
 
 export default function MyRegistrationsPage() {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const router = useRouter()
   
   const [registrations, setRegistrations] = useState<RegistrationWithDetails[]>([])

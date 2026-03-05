@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import { SessionWithRelations } from '@/types'
 import { SessionDetail } from '@/components/sessions/SessionDetail'
 import { Button } from '@/components/ui/Button'
@@ -16,7 +16,6 @@ const MOCK_USER_ID = 'user-demo-123'
 
 export default function SessionPage({ params }: SessionPageProps) {
   const { eventId, sessionId } = params
-  const router = useRouter()
 
   const [session, setSession] = useState<SessionWithRelations | null>(null)
   const [isInAgenda, setIsInAgenda] = useState(false)
@@ -44,8 +43,8 @@ export default function SessionPage({ params }: SessionPageProps) {
         ])
 
         setSession(sessionData)
-        setIsInAgenda(agendaData.some((item: any) => item.sessionId === sessionId))
-      } catch (err) {
+        setIsInAgenda(agendaData.some((item: { sessionId: string }) => item.sessionId === sessionId))
+      } catch {
         setError('Failed to load session')
       } finally {
         setIsLoading(false)

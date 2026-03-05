@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, Home, Settings, LogOut, User } from "lucide-react";
+import { Calendar, Home, Settings, User } from "lucide-react";
 
 export default function StudioLayout({
   children,

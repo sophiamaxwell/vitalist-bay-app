@@ -17,7 +17,7 @@ export async function GET(
     const published = searchParams.get('published')
     const date = searchParams.get('date')
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       eventId,
     }
 

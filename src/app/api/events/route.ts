@@ -8,8 +8,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const {
-      // Event type (for analytics/categorization)
-      eventType,
       // Event details
       name,
       description,
@@ -17,26 +15,15 @@ export async function POST(request: NextRequest) {
       endDate,
       timezone,
       format,
-      sector,
       venue,
       address,
       city,
       country,
       virtualUrl,
       // Community
-      communityName,
       slug: rawSlug,
       primaryColor,
       logo,
-      // Organization (stored as metadata for now)
-      organizationName,
-      organizationType,
-      organizationCountry,
-      eventsPerYear,
-      expectedAttendees,
-      // Key results
-      objectives,
-      customObjective,
     } = body;
 
     // Validate required fields
@@ -117,7 +104,7 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (search) {
       where.OR = [

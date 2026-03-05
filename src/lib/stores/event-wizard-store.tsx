@@ -4,9 +4,7 @@ import React, { createContext, useContext, useReducer, useCallback } from "react
 import type {
   EventTypeFormData,
   EventDetailsFormData,
-  CommunityNamingFormData,
   OrganizationSetupFormData,
-  KeyResultsFormData,
 } from "@/lib/validations/event";
 
 // Steps definition

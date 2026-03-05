@@ -17,7 +17,7 @@ export async function GET(
     const skip = (page - 1) * limit
 
     // Build where clause
-    const where: any = {
+    const where: { eventId: string; status: string; checkedIn?: boolean; user?: { OR: Array<{ name?: { contains: string; mode: 'insensitive' }; email?: { contains: string; mode: 'insensitive' } }> } } = {
       eventId,
       status: 'CONFIRMED'
     }

@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import { Button, Input, Select, Textarea } from "@/components/ui";
-import { RadioGroup } from "@/components/ui/radio-group";
 import { useEventWizard } from "@/lib/stores/event-wizard-store";
 import {
   eventDetailsSchema,
@@ -15,7 +14,7 @@ import {
   TIMEZONES,
   LANGUAGES,
 } from "@/lib/validations/event";
-import { ArrowLeft, ArrowRight, MapPin, Globe, Users, Laptop, Radio } from "lucide-react";
+import { ArrowLeft, ArrowRight, MapPin, Globe, Laptop, Radio } from "lucide-react";
 
 export function StepEventDetails() {
   const { state, updateData, nextStep, prevStep } = useEventWizard();
@@ -52,11 +51,8 @@ export function StepEventDetails() {
     nextStep();
   };
 
-  const formatOptions = EVENT_FORMATS.map((f) => ({
-    value: f.value,
-    label: f.label,
-    description: f.description,
-  }));
+  // Format options available for future UI enhancement
+  void EVENT_FORMATS;
 
   return (
     <div className="animate-fade-in">

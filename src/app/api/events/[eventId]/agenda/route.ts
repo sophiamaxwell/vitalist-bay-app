@@ -144,10 +144,10 @@ export async function POST(
 // DELETE /api/events/[eventId]/agenda - Remove session from personal agenda
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
+  _context: { params: { eventId: string } }
 ) {
+  void _context; // eventId available via context.params.eventId if needed
   try {
-    const { eventId } = params
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
     const sessionId = searchParams.get('sessionId')

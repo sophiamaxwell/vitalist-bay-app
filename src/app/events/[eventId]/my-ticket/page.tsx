@@ -61,7 +61,7 @@ export default function MyTicketPage({ params }: MyTicketPageProps) {
         } else {
           setError('Failed to load ticket')
         }
-      } catch (err) {
+      } catch {
         setError('Network error')
       } finally {
         setIsLoading(false)

@@ -36,7 +36,7 @@ export function useHaptic() {
     if ('vibrate' in navigator) {
       try {
         navigator.vibrate(pattern)
-      } catch (e) {
+      } catch {
         // Vibration not supported or blocked
       }
     }
@@ -110,7 +110,7 @@ export function useNetworkStatus() {
     const updateNetworkInfo = () => {
       setIsOnline(navigator.onLine)
       
-      // @ts-ignore - connection is not in standard Navigator type
+      // @ts-expect-error - connection is not in standard Navigator type
       const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection
       if (connection) {
         setConnectionType(connection.effectiveType || 'unknown')

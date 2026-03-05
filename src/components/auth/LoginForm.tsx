@@ -38,7 +38,7 @@ export function LoginForm() {
         })
         setEmail('')
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Something went wrong. Please try again.' })
     } finally {
       setIsLoading(false)
@@ -63,7 +63,7 @@ export function LoginForm() {
       } else if (result?.ok) {
         window.location.href = callbackUrl
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Something went wrong. Please try again.' })
     } finally {
       setIsLoading(false)

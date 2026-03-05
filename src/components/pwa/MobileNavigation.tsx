@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Calendar, User, Ticket, Settings } from 'lucide-react';
+import { Home, User, Ticket, Settings } from 'lucide-react';
 
 interface NavItem {
   href: string;

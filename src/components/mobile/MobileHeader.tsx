@@ -21,7 +21,7 @@ const menuItems = [
   { href: '/register', label: 'Register', icon: '✍️', highlight: true },
 ]
 
-export function MobileHeader({ eventId, eventName = 'Event' }: MobileHeaderProps) {
+export function MobileHeader({ eventId }: MobileHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = usePathname()
   const baseUrl = `/events/${eventId}`

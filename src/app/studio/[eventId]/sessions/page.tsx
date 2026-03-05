@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import { SessionWithRelations, Track, Room, Speaker, SessionFormData } from '@/types'
 import { SessionList } from '@/components/sessions/SessionList'
 import { SessionForm } from '@/components/sessions/SessionForm'
@@ -16,14 +16,13 @@ interface SessionsPageProps {
 
 export default function SessionsPage({ params }: SessionsPageProps) {
   const { eventId } = params
-  const router = useRouter()
 
   const [sessions, setSessions] = useState<SessionWithRelations[]>([])
   const [tracks, setTracks] = useState<Track[]>([])
   const [rooms, setRooms] = useState<Room[]>([])
   const [speakers, setSpeakers] = useState<Speaker[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [, setError] = useState<string | null>(null)
 
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false)

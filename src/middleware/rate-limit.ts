@@ -250,4 +250,5 @@ export function getRateLimitStats() {
   return stats
 }
 
-export default { rateLimit, addRateLimitHeaders, getRateLimitStats, RATE_LIMITS }
+const rateLimitExports = { rateLimit, addRateLimitHeaders, getRateLimitStats, RATE_LIMITS }
+export default rateLimitExports

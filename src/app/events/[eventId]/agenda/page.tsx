@@ -1,13 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import { SessionWithRelations, Track } from '@/types'
 import { SessionList } from '@/components/sessions/SessionList'
 import { SessionDetail } from '@/components/sessions/SessionDetail'
 import { Modal } from '@/components/ui/Modal'
 import { Card, CardContent } from '@/components/ui/Card'
-import { cn } from '@/lib/utils'
 
 interface AgendaPageProps {
   params: { eventId: string }
@@ -18,7 +16,6 @@ const MOCK_USER_ID = 'user-demo-123'
 
 export default function AgendaPage({ params }: AgendaPageProps) {
   const { eventId } = params
-  const router = useRouter()
 
   const [sessions, setSessions] = useState<SessionWithRelations[]>([])
   const [tracks, setTracks] = useState<Track[]>([])
@@ -50,7 +47,7 @@ export default function AgendaPage({ params }: AgendaPageProps) {
 
         setSessions(sessionsData)
         setTracks(tracksData)
-        setAgendaSessionIds(new Set(agendaData.map((item: any) => item.sessionId)))
+        setAgendaSessionIds(new Set(agendaData.map((item: { sessionId: string }) => item.sessionId)))
       } catch (err) {
         console.error('Failed to load agenda:', err)
       } finally {

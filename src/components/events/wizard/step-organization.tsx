@@ -4,7 +4,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input, Select, Checkbox } from "@/components/ui";
-import { RadioGroup } from "@/components/ui/radio-group";
 import { useEventWizard } from "@/lib/stores/event-wizard-store";
 import {
   organizationSetupSchema,

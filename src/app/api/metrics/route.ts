@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       return new NextResponse(metrics, {
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },
       })
-    } catch (error) {
+    } catch {
       return new NextResponse('# Error exporting metrics', {
         status: 500,
         headers: { 'Content-Type': 'text/plain' },

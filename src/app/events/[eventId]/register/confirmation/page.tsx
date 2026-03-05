@@ -23,7 +23,8 @@ export default function ConfirmationPage({ params }: ConfirmationPageProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const registrationId = searchParams.get('id')
+  // registrationId could be used for direct lookup in the future
+  void searchParams.get('id')
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -110,7 +111,7 @@ export default function ConfirmationPage({ params }: ConfirmationPageProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">You're Registered! 🎉</h1>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">You&apos;re Registered! 🎉</h1>
         <p className="text-slate-500">
           A confirmation email has been sent to your inbox.
         </p>
@@ -192,7 +193,7 @@ export default function ConfirmationPage({ params }: ConfirmationPageProps) {
       {/* What's Next */}
       <Card className="mb-6">
         <CardContent className="p-6">
-          <h3 className="font-semibold text-slate-900 mb-4">What's Next?</h3>
+          <h3 className="font-semibold text-slate-900 mb-4">What&apos;s Next?</h3>
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
               <span className="text-primary">✓</span>
