@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
+
 import { prisma } from '@/lib/prisma'
 
 // GET /api/events/[eventId]/sessions - List all sessions for an event

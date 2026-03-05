@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
+
+export const dynamic = 'force-dynamic'
 import { Plus, Calendar, Users, MapPin, Globe } from "lucide-react";
 
 export const metadata = {

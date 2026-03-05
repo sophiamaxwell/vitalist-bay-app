@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
+
 import { getPerformanceSummary, exportMetrics } from '@/lib/monitoring'
-import { checkDatabaseHealth } from '@/lib/prisma-pooled'
 import { getRateLimitStats } from '@/middleware/rate-limit'
 import { prisma } from '@/lib/prisma'
+import { PrismaClient } from '@prisma/client'
+
+// Simple database health check
+async function checkDatabaseHealth(client: PrismaClient): Promise<{ healthy: boolean; latencyMs: number }> {
+  const startTime = Date.now()
+  try {
+    await client.$queryRaw`SELECT 1`
+    return { healthy: true, latencyMs: Date.now() - startTime }
+  } catch {
+    return { healthy: false, latencyMs: Date.now() - startTime }
+  }
+}
 
 /**
  * GET /api/metrics - Performance metrics endpoint
