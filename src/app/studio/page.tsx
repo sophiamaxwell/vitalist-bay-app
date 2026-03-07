@@ -8,6 +8,8 @@ export const metadata = {
   description: "Your Vitalist Bay event management dashboard",
 };
 
+export const dynamic = "force-dynamic";
+
 async function getStats() {
   try {
     const [eventsCount, upcomingEvents] = await Promise.all([

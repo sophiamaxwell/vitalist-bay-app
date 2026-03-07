@@ -59,6 +59,28 @@ export function formatDuration(start: Date | string, end: Date | string): string
   return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
 }
 
+export function groupSessionsByDate<T extends { startTime: Date | string }>(
+  sessions: T[]
+): Map<string, T[]> {
+  const grouped = new Map<string, T[]>()
+
+  for (const session of sessions) {
+    const date = typeof session.startTime === "string"
+      ? new Date(session.startTime)
+      : session.startTime
+    const key = date.toLocaleDateString("en-CA")
+    const existing = grouped.get(key)
+
+    if (existing) {
+      existing.push(session)
+    } else {
+      grouped.set(key, [session])
+    }
+  }
+
+  return grouped
+}
+
 export function getSessionTypeColor(type: string): string {
   const colors: Record<string, string> = {
     KEYNOTE: 'bg-purple-500',
